@@ -17,35 +17,35 @@
 			containerPortal = 91B09B6B2E796A7100844B9D /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 91B09B722E796A7100844B9D;
-			remoteInfo = HabitPet;
+			remoteInfo = Forki;
 		};
 		91B09B822E796A7200844B9D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 91B09B6B2E796A7100844B9D /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 91B09B722E796A7100844B9D;
-			remoteInfo = HabitPet;
+			remoteInfo = Forki;
 		};
 		91B09B8C2E796A7200844B9D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 91B09B6B2E796A7100844B9D /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 91B09B722E796A7100844B9D;
-			remoteInfo = HabitPet;
+			remoteInfo = Forki;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		91A60B592E7B5D9D00887127 /* HabitPet_V0.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HabitPet_V0.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		91A60B592E7B5D9D00887127 /* Forki_V0.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Forki_V0.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		91B09B732E796A7100844B9D /* Forki.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Forki.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		91B09B812E796A7200844B9D /* HabitPetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HabitPetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		91B09B8B2E796A7200844B9D /* HabitPetUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HabitPetUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		91B09B812E796A7200844B9D /* ForkiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ForkiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		91B09B8B2E796A7200844B9D /* ForkiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ForkiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		91B09B752E796A7100844B9D /* HabitPet */ = {
+		91B09B752E796A7100844B9D /* Forki */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = HabitPet;
+			path = Forki;
 			sourceTree = "<group>";
 		};
 		91B09B842E796A7200844B9D /* HabitPetTests */ = {
@@ -97,7 +97,7 @@
 		91B09B6A2E796A7100844B9D = {
 			isa = PBXGroup;
 			children = (
-				91B09B752E796A7100844B9D /* HabitPet */,
+				91B09B752E796A7100844B9D /* Forki */,
 				91B09B842E796A7200844B9D /* HabitPetTests */,
 				91B09B8E2E796A7200844B9D /* HabitPetUITests */,
 				91B09B742E796A7100844B9D /* Products */,
@@ -108,9 +108,9 @@
 			isa = PBXGroup;
 			children = (
 				91B09B732E796A7100844B9D /* Forki.app */,
-				91B09B812E796A7200844B9D /* HabitPetTests.xctest */,
-				91B09B8B2E796A7200844B9D /* HabitPetUITests.xctest */,
-				91A60B592E7B5D9D00887127 /* HabitPet_V0.xctest */,
+				91B09B812E796A7200844B9D /* ForkiTests.xctest */,
+				91B09B8B2E796A7200844B9D /* ForkiUITests.xctest */,
+				91A60B592E7B5D9D00887127 /* Forki_V0.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -118,9 +118,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		91A60B582E7B5D9D00887127 /* HabitPet_V0 */ = {
+		91A60B582E7B5D9D00887127 /* Forki_V0 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 91A60B5F2E7B5D9D00887127 /* Build configuration list for PBXNativeTarget "HabitPet_V0" */;
+			buildConfigurationList = 91A60B5F2E7B5D9D00887127 /* Build configuration list for PBXNativeTarget "Forki_V0" */;
 			buildPhases = (
 				91A60B552E7B5D9D00887127 /* Sources */,
 				91A60B562E7B5D9D00887127 /* Frameworks */,
@@ -131,11 +131,11 @@
 			dependencies = (
 				91A60B5E2E7B5D9D00887127 /* PBXTargetDependency */,
 			);
-			name = HabitPet_V0;
+			name = Forki_V0;
 			packageProductDependencies = (
 			);
 			productName = HabitPet_V0;
-			productReference = 91A60B592E7B5D9D00887127 /* HabitPet_V0.xctest */;
+			productReference = 91A60B592E7B5D9D00887127 /* Forki_V0.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		91B09B722E796A7100844B9D /* Forki */ = {
@@ -151,20 +151,20 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				91B09B752E796A7100844B9D /* HabitPet */,
+				91B09B752E796A7100844B9D /* Forki */,
 			);
 			name = Forki;
 			packageProductDependencies = (
 				91A60B432E7B474E00887127 /* Lottie */,
 				9183389F2EA9CD3D00AF1A3B /* CalorieCameraKit */,
 			);
-			productName = HabitPet;
+			productName = Forki;
 			productReference = 91B09B732E796A7100844B9D /* Forki.app */;
 			productType = "com.apple.product-type.application";
 		};
-		91B09B802E796A7200844B9D /* HabitPetTests */ = {
+		91B09B802E796A7200844B9D /* ForkiTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 91B09B982E796A7200844B9D /* Build configuration list for PBXNativeTarget "HabitPetTests" */;
+			buildConfigurationList = 91B09B982E796A7200844B9D /* Build configuration list for PBXNativeTarget "ForkiTests" */;
 			buildPhases = (
 				91B09B7D2E796A7200844B9D /* Sources */,
 				91B09B7E2E796A7200844B9D /* Frameworks */,
@@ -178,16 +178,16 @@
 			fileSystemSynchronizedGroups = (
 				91B09B842E796A7200844B9D /* HabitPetTests */,
 			);
-			name = HabitPetTests;
+			name = ForkiTests;
 			packageProductDependencies = (
 			);
-			productName = HabitPetTests;
-			productReference = 91B09B812E796A7200844B9D /* HabitPetTests.xctest */;
+			productName = ForkiTests;
+			productReference = 91B09B812E796A7200844B9D /* ForkiTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		91B09B8A2E796A7200844B9D /* HabitPetUITests */ = {
+		91B09B8A2E796A7200844B9D /* ForkiUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 91B09B9B2E796A7200844B9D /* Build configuration list for PBXNativeTarget "HabitPetUITests" */;
+			buildConfigurationList = 91B09B9B2E796A7200844B9D /* Build configuration list for PBXNativeTarget "ForkiUITests" */;
 			buildPhases = (
 				91B09B872E796A7200844B9D /* Sources */,
 				91B09B882E796A7200844B9D /* Frameworks */,
@@ -201,11 +201,11 @@
 			fileSystemSynchronizedGroups = (
 				91B09B8E2E796A7200844B9D /* HabitPetUITests */,
 			);
-			name = HabitPetUITests;
+			name = ForkiUITests;
 			packageProductDependencies = (
 			);
-			productName = HabitPetUITests;
-			productReference = 91B09B8B2E796A7200844B9D /* HabitPetUITests.xctest */;
+			productName = ForkiUITests;
+			productReference = 91B09B8B2E796A7200844B9D /* ForkiUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -254,9 +254,9 @@
 			projectRoot = "";
 			targets = (
 				91B09B722E796A7100844B9D /* Forki */,
-				91B09B802E796A7200844B9D /* HabitPetTests */,
-				91B09B8A2E796A7200844B9D /* HabitPetUITests */,
-				91A60B582E7B5D9D00887127 /* HabitPet_V0 */,
+				91B09B802E796A7200844B9D /* ForkiTests */,
+				91B09B8A2E796A7200844B9D /* ForkiUITests */,
+				91A60B582E7B5D9D00887127 /* Forki_V0 */,
 			);
 		};
 /* End PBXProject section */
@@ -352,13 +352,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.HabitPet;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.Forki;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HabitPet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HabitPet";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Forki.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Forki";
 			};
 			name = Debug;
 		};
@@ -372,13 +372,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.HabitPet;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.Forki;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HabitPet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HabitPet";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Forki.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Forki";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -504,7 +504,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = HabitPet/HabitPet.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Forki/Forki.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = R7YF553FYX;
@@ -528,7 +528,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.HabitPet;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.Forki;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -545,7 +545,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = HabitPet/HabitPet.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Forki/Forki.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = R7YF553FYX;
@@ -569,7 +569,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.HabitPet;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.Forki;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -592,14 +592,14 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.HabitPetTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.ForkiTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HabitPet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HabitPet";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Forki.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Forki";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Debug;
@@ -615,14 +615,14 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.HabitPetTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.ForkiTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HabitPet.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HabitPet";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Forki.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Forki";
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Release;
@@ -637,14 +637,14 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.HabitPetUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.ForkiUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_TARGET_NAME = HabitPet;
+				TEST_TARGET_NAME = Forki;
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Debug;
@@ -659,14 +659,14 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.HabitPetUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IYA.JaniceChung.ForkiUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_TARGET_NAME = HabitPet;
+				TEST_TARGET_NAME = Forki;
 				XROS_DEPLOYMENT_TARGET = 2.5;
 			};
 			name = Release;
@@ -674,7 +674,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		91A60B5F2E7B5D9D00887127 /* Build configuration list for PBXNativeTarget "HabitPet_V0" */ = {
+		91A60B5F2E7B5D9D00887127 /* Build configuration list for PBXNativeTarget "Forki_V0" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				91A60B602E7B5D9D00887127 /* Debug */,
@@ -701,7 +701,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		91B09B982E796A7200844B9D /* Build configuration list for PBXNativeTarget "HabitPetTests" */ = {
+		91B09B982E796A7200844B9D /* Build configuration list for PBXNativeTarget "ForkiTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				91B09B992E796A7200844B9D /* Debug */,
@@ -710,7 +710,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		91B09B9B2E796A7200844B9D /* Build configuration list for PBXNativeTarget "HabitPetUITests" */ = {
+		91B09B9B2E796A7200844B9D /* Build configuration list for PBXNativeTarget "ForkiUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				91B09B9C2E796A7200844B9D /* Debug */,

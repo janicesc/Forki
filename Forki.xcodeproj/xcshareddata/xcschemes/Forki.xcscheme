@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "91B09B722E796A7100844B9D"
-               BuildableName = "HabitPet.app"
-               BlueprintName = "HabitPet"
-               ReferencedContainer = "container:HabitPet.xcodeproj">
+               BuildableName = "Forki.app"
+               BlueprintName = "Forki"
+               ReferencedContainer = "container:Forki.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -36,9 +36,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "91B09B802E796A7200844B9D"
-               BuildableName = "HabitPetTests.xctest"
-               BlueprintName = "HabitPetTests"
-               ReferencedContainer = "container:HabitPet.xcodeproj">
+               BuildableName = "ForkiTests.xctest"
+               BlueprintName = "ForkiTests"
+               ReferencedContainer = "container:Forki.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -47,9 +47,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "91B09B8A2E796A7200844B9D"
-               BuildableName = "HabitPetUITests.xctest"
-               BlueprintName = "HabitPetUITests"
-               ReferencedContainer = "container:HabitPet.xcodeproj">
+               BuildableName = "ForkiUITests.xctest"
+               BlueprintName = "ForkiUITests"
+               ReferencedContainer = "container:Forki.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -58,9 +58,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "91A60B582E7B5D9D00887127"
-               BuildableName = "HabitPet_V0.xctest"
-               BlueprintName = "HabitPet_V0"
-               ReferencedContainer = "container:HabitPet.xcodeproj">
+               BuildableName = "Forki_V0.xctest"
+               BlueprintName = "Forki_V0"
+               ReferencedContainer = "container:Forki.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -80,9 +80,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "91B09B722E796A7100844B9D"
-            BuildableName = "HabitPet.app"
-            BlueprintName = "HabitPet"
-            ReferencedContainer = "container:HabitPet.xcodeproj">
+            BuildableName = "Forki.app"
+            BlueprintName = "Forki"
+            ReferencedContainer = "container:Forki.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <EnvironmentVariables>
@@ -104,9 +104,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "91B09B722E796A7100844B9D"
-            BuildableName = "HabitPet.app"
-            BlueprintName = "HabitPet"
-            ReferencedContainer = "container:HabitPet.xcodeproj">
+            BuildableName = "Forki.app"
+            BlueprintName = "Forki"
+            ReferencedContainer = "container:Forki.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
