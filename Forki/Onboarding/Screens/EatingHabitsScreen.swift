@@ -33,7 +33,7 @@ struct EatingHabitsScreen: View {
                         currentStep: navigator.currentStep,
                         totalSteps: navigator.totalSteps,
                         sectionIndex: navigator.getSectionIndex(for: navigator.currentStep),
-                        totalSections: 7,
+                        totalSections: 6,
                         canGoBack: navigator.canGoBack(),
                         onBack: { navigator.goBack() }
                     )
@@ -41,9 +41,9 @@ struct EatingHabitsScreen: View {
                     .padding(.top, 12)
                     
                     // Content
-                    VStack(spacing: 32) {
+                    VStack(spacing: 20) {
                         // Header
-                        VStack(spacing: 8) {
+                        VStack(spacing: 6) {
                             Text("Do you have any of these habits?")
                                 .font(.system(size: 28, weight: .heavy, design: .rounded))
                                 .foregroundColor(ForkiTheme.textPrimary)
@@ -55,9 +55,10 @@ struct EatingHabitsScreen: View {
                                 .multilineTextAlignment(.center)
                         }
                         .padding(.horizontal, 16)
+                        .padding(.bottom, 4) // Reduce spacing below header
                         
                         // Habit Cards
-                        VStack(spacing: 12) {
+                        VStack(spacing: 10) {
                             ForEach(habits, id: \.id) { habit in
                                 MultiSelectCard(
                                     title: habit.title,
@@ -97,6 +98,7 @@ struct EatingHabitsScreen: View {
                     .padding(.horizontal, 24)
                     .padding(.bottom, 32)
                 }
+                .frame(maxWidth: 460)
             }
         }
     }

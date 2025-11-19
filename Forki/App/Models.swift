@@ -21,6 +21,9 @@ class UserData: ObservableObject {
     @Published var foodPreferences: [String] = []
     @Published var notifications: Bool = false
     @Published var selectedCharacter: CharacterType = .avatar
+    
+    // Main nutrition + avatar logic used across the entire app
+    @Published var nutrition: NutritionState = NutritionState()
 
     // live-updating scales
     @Published var heightScale: CGFloat = 1.0

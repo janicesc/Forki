@@ -152,7 +152,29 @@ class OnboardingData: ObservableObject {
 
 // MARK: - Enums
 
-// Note: GenderChoice is defined in BiometricsScreen.swift - using that definition
+enum GenderChoice: String, CaseIterable, Identifiable {
+    case man = "man"
+    case woman = "woman"
+    case nonBinary = "non-binary"
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .man:       return "Man"
+        case .woman:     return "Woman"
+        case .nonBinary: return "Non-binary"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .man:       return "♂"
+        case .woman:     return "♀"
+        case .nonBinary: return "🜬"
+        }
+    }
+}
 
 enum HeightUnit: String, CaseIterable {
     case feet = "ft"
@@ -162,5 +184,13 @@ enum HeightUnit: String, CaseIterable {
 enum WeightUnit: String, CaseIterable {
     case lbs = "lbs"
     case kg = "kg"
+}
+
+// MARK: - Helper Extensions
+
+extension Comparable {
+    func clamped(to range: ClosedRange<Self>) -> Self {
+        min(max(self, range.lowerBound), range.upperBound)
+    }
 }
 

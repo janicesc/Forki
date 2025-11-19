@@ -2276,14 +2276,14 @@
     "fat": 0.5
   },
   {
-    "name": "Kimchi",
+    "name": "Kimchi Fried Rice",
     "searchKey": "kimchi fried rice",
-    "fdcId": 2710077,
-    "category": "Olives, pickles, pickled vegetables",
-    "calories": 15.0,
-    "protein": 1.1,
-    "carbs": 2.4,
-    "fat": 0.5
+    "fdcId": 2106080,
+    "category": "Flavored Rice Dishes",
+    "calories": 401.0,
+    "protein": 7.24,
+    "carbs": 65.79,
+    "fat": 11.84
   },
   {
     "name": "Kiwifruit, green, raw",

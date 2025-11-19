@@ -51,7 +51,7 @@ struct OnboardingPrimaryButton: View {
                                 .stroke(Color(hex: "#7B68C4"), lineWidth: 2) // Purple border matching theme
                         )
                 )
-                .shadow(color: isEnabled ? Color(hex: "#8B5CF6").opacity(0.4) : Color.clear, radius: 16, x: 0, y: 8)
+                .shadow(color: isEnabled ? Color(hex: "#8B5CF6").opacity(0.4) : Color.clear, radius: 16, x: 0, y: 8) // Purple glow
         }
         .disabled(!isEnabled)
         .buttonStyle(PlainButtonStyle())

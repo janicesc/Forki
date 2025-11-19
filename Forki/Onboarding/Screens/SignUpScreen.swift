@@ -18,6 +18,10 @@ struct SignUpScreen: View {
     @State private var showNameError: Bool = false
     @State private var showUsernameError: Bool = false
     @State private var showPasswordError: Bool = false
+    @State private var usernameErrorMessage: String = ""
+    @State private var isLoading: Bool = false
+    @State private var showTerms: Bool = false
+    @State private var showPrivacy: Bool = false
     @FocusState private var focusedField: Field?
     
     enum Field {
@@ -42,43 +46,70 @@ struct SignUpScreen: View {
                     .frame(maxWidth: 420)
                     .padding(.horizontal, 24)
                     .padding(.top, 80)
-                    .padding(.bottom, 36)
+                    .padding(.bottom, 200) // Extra padding for fixed buttons
                 }
-                
-                // Bottom buttons
+                .ignoresSafeArea(.keyboard, edges: .bottom)
+            }
+            
+            // Fixed buttons overlay - not affected by keyboard
+            VStack {
+                Spacer()
                 VStack(spacing: 8) {
                     HStack(spacing: 12) {
                         Button {
                             withAnimation(.easeInOut) { currentScreen = 2 }
                         } label: {
                             Text("Sign In")
-                                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                .font(.system(size: 16, weight: .heavy, design: .rounded))
                                 .foregroundColor(ForkiTheme.textPrimary)
                                 .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                                .background(ForkiTheme.surface)
-                                .cornerRadius(12)
-                                .shadow(color: ForkiTheme.borderPrimary.opacity(0.1), radius: 4, x: 0, y: 2)
+                                .padding(.vertical, 18)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                        .fill(ForkiTheme.surface)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                                .stroke(ForkiTheme.borderPrimary.opacity(0.3), lineWidth: 2)
+                                        )
+                                )
+                                .shadow(color: ForkiTheme.actionShadow, radius: 10, x: 0, y: 6)
                         }
+                        .buttonStyle(PlainButtonStyle())
                         
                         Button {
                             validateForm()
                         } label: {
-                            Text("Sign Up")
-                                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                                .background(
+                            if isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 18)
+                            } else {
+                                Text("Sign Up")
+                                    .font(.system(size: 16, weight: .heavy, design: .rounded))
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 18)
+                            }
+                        }
+                        .disabled(isLoading)
+                        .background(
+                            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                .fill(
                                     LinearGradient(
-                                        colors: [ForkiTheme.actionLogFood, ForkiTheme.actionLogFoodEnd],
+                                        colors: [Color(hex: "#8DD4D1"), Color(hex: "#6FB8B5")],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
                                     )
                                 )
-                                .cornerRadius(12)
-                                .shadow(color: ForkiTheme.borderPrimary.opacity(0.1), radius: 4, x: 0, y: 2)
-                        }
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                        .stroke(Color(hex: "#7AB8B5"), lineWidth: 4)
+                                )
+                        )
+                        .foregroundColor(.white)
+                        .shadow(color: ForkiTheme.actionShadow, radius: 10, x: 0, y: 6)
+                        .buttonStyle(PlainButtonStyle())
                     }
                     
                     // Separate text below Sign In button (centered to Sign In button width)
@@ -103,11 +134,20 @@ struct SignUpScreen: View {
                     .padding(.top, 2)
                 }
                 .padding(.horizontal, 24)
-                .padding(.bottom, 32)
+                .padding(.bottom, 80)
             }
+            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .onAppear {
-            name = userData.name
+            // Clear all fields when screen appears (e.g., after sign out or navigation)
+            name = ""
+            username = ""
+            password = ""
+            showNameError = false
+            showUsernameError = false
+            showPasswordError = false
+            usernameErrorMessage = ""
+            focusedField = nil
         }
     }
     
@@ -151,19 +191,26 @@ struct SignUpScreen: View {
                 }
             }
             
-            // Username Input
+            // Email Input (used as username for Supabase Auth)
             VStack(alignment: .leading, spacing: 6) {
                 StyledTextField(
-                    title: "Username",
-                    placeholder: "Value",
+                    title: "Email",
+                    placeholder: "your@email.com",
                     text: $username,
                     isError: showUsernameError,
                     focusedField: $focusedField,
                     fieldType: .username
                 )
+                .onChange(of: username) { _, newValue in
+                    // Clear error state when email becomes valid
+                    if !newValue.trimmingCharacters(in: .whitespaces).isEmpty && isValidEmail(newValue) {
+                        showUsernameError = false
+                        usernameErrorMessage = ""
+                    }
+                }
                 
                 if showUsernameError {
-                    errorMessage("Please fill out this field.")
+                    errorMessage(usernameErrorMessage.isEmpty ? "Please fill out this field." : usernameErrorMessage)
                 }
             }
             
@@ -178,6 +225,13 @@ struct SignUpScreen: View {
                     fieldType: .password,
                     isSecure: true
                 )
+                .onChange(of: password) { _, newValue in
+                    // Clear error state when password becomes valid
+                    // Use basic validation for real-time clearing (Supabase may have stricter requirements)
+                    if isValidPassword(newValue) {
+                        showPasswordError = false
+                    }
+                }
                 
                 if showPasswordError {
                     errorMessage("Must be 6 or more characters and at least 1 special character")
@@ -186,6 +240,7 @@ struct SignUpScreen: View {
                     Text("Must be 6 or more characters and at least 1 special character")
                         .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(ForkiTheme.textSecondary.opacity(0.7))
+                        .padding(.leading, 5)
                         .padding(.top, 2)
                 }
             }
@@ -194,54 +249,203 @@ struct SignUpScreen: View {
     
     // MARK: Footer
     private var footerSection: some View {
-        Text("By continuing, you agree to our Terms & Privacy Policy")
-            .font(.system(size: 13, weight: .medium, design: .rounded))
-            .foregroundColor(ForkiTheme.textSecondary.opacity(0.8))
-            .multilineTextAlignment(.center)
+        HStack(spacing: 0) {
+            Text("By continuing, you agree to our ")
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundColor(ForkiTheme.textSecondary.opacity(0.8))
+            
+            Button(action: {
+                showTerms = true
+            }) {
+                Text("Terms")
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundColor(ForkiTheme.borderPrimary)
+            }
+            
+            Text(" & ")
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundColor(ForkiTheme.textSecondary.opacity(0.8))
+            
+            Button(action: {
+                showPrivacy = true
+            }) {
+                Text(" Privacy Policy")
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundColor(ForkiTheme.borderPrimary)
+            }
+            
+            Text(".")
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundColor(ForkiTheme.textSecondary.opacity(0.8))
+        }
+        .multilineTextAlignment(.center)
+        .sheet(isPresented: $showTerms) {
+            TermsOfServiceView(onDismiss: {
+                showTerms = false
+            })
+        }
+        .sheet(isPresented: $showPrivacy) {
+            PrivacyPolicyView(onDismiss: {
+                showPrivacy = false
+            })
+        }
     }
     
     // MARK: Validation
     private func validateForm() {
+        // Clear all previous errors first
+        showNameError = false
+        showUsernameError = false
+        showPasswordError = false
+        usernameErrorMessage = ""
+        
         var isValid = true
         
         if name.trimmingCharacters(in: .whitespaces).isEmpty {
             showNameError = true
             isValid = false
-        } else {
-            showNameError = false
         }
         
         if username.trimmingCharacters(in: .whitespaces).isEmpty {
             showUsernameError = true
+            usernameErrorMessage = "Please fill out this field."
             isValid = false
-        } else {
-            showUsernameError = false
+        } else if !isValidEmail(username) {
+            showUsernameError = true
+            usernameErrorMessage = "Please enter a valid email address."
+            isValid = false
         }
         
         if !isValidPassword(password) {
             showPasswordError = true
             isValid = false
-        } else {
-            showPasswordError = false
         }
         
         if isValid {
-            userData.updateName(name)
-            userData.email = username
+            isLoading = true
             
-            // Save email
-            UserDefaults.standard.set(username, forKey: "hp_userEmail")
-            
-            // Call completion handler to start onboarding
-            onSignUpComplete?()
+            // Sign up with Supabase
+            Task {
+                do {
+                    let (userId, session) = try await SupabaseAuthService.shared.signUp(
+                        username: username,
+                        password: password,
+                        name: name
+                    )
+                    
+                    // Save session only if it's valid (has real tokens)
+                    // If session is "pending", it means user was created but no session was returned
+                    // This is fine - user can proceed to onboarding and sign in later if needed
+                    if !session.accessToken.isEmpty && session.accessToken != "pending" {
+                        SupabaseAuthService.shared.saveSession(session)
+                    } else {
+                        print("ℹ️ No session to save - user created successfully, proceeding to onboarding")
+                    }
+                    
+                    // Save user data to Supabase users table
+                    // Note: A database trigger will automatically create the row in public.users
+                    // when the user is created in auth.users. We'll update it with the name here.
+                    do {
+                        // Create a temporary UserData with signup info
+                        let tempUserData = UserData()
+                        tempUserData.name = name
+                        tempUserData.email = username
+                        
+                        // Use session token if available for authentication
+                        let token = session.accessToken.isEmpty || session.accessToken == "pending" ? nil : session.accessToken
+                        
+                        try await SupabaseAuthService.shared.saveUserData(
+                            userId: userId,
+                            userData: tempUserData,
+                            accessToken: token
+                        )
+                        print("✅ User data saved to Supabase")
+                    } catch {
+                        print("⚠️ Failed to save user data to Supabase: \(error)")
+                        // The database trigger should have created the row automatically
+                        // We'll update it after onboarding or on next sign in
+                    }
+                    
+                    // Update local userData
+                    await MainActor.run {
+                        isLoading = false
+                        userData.updateName(name)
+                        userData.email = username
+                        
+                        // Save email locally (continue to save userData as we already do)
+                        UserDefaults.standard.set(username, forKey: "hp_userEmail")
+                        UserDefaults.standard.set(userId, forKey: "supabase_user_id")
+                        
+                        // Call completion handler to start onboarding
+                        onSignUpComplete?()
+                    }
+                } catch let error as SupabaseAuthService.AuthError {
+                    await MainActor.run {
+                        isLoading = false
+                        // Clear all validation errors first - we'll show the auth error instead
+                        showNameError = false
+                        showPasswordError = false
+                        
+                        // Show error message based on error type
+                        switch error {
+                        case .emailAlreadyExists:
+                            // Only show duplicate email error - account exists in Supabase
+                            showUsernameError = true
+                            usernameErrorMessage = "This email is already registered. Log in instead?"
+                        case .userNotFound:
+                            // This shouldn't happen on signup, but handle it
+                            showUsernameError = true
+                            usernameErrorMessage = "Please fill out this field."
+                        case .invalidCredentials:
+                            // This shouldn't happen on signup, but handle it
+                            showPasswordError = true
+                            print("Invalid credentials error during sign up")
+                        case .networkError(let message):
+                            // Show network errors on password field with message
+                            showPasswordError = true
+                            print("Network error during sign up: \(message)")
+                        case .unknownError(let message):
+                            // Show unknown errors - could be password requirements or other issues
+                            showPasswordError = true
+                            print("Sign up error: \(message)")
+                        }
+                    }
+                } catch {
+                    await MainActor.run {
+                        isLoading = false
+                        showPasswordError = true
+                        print("Unexpected error during sign up: \(error)")
+                    }
+                }
+            }
         }
+    }
+    
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = #"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"#
+        return email.range(of: emailRegex, options: .regularExpression) != nil
     }
     
     private func isValidPassword(_ password: String) -> Bool {
         // Must be 6 or more characters and at least 1 special character
+        // Note: Supabase may have additional requirements (uppercase, lowercase, numbers)
         guard password.count >= 6 else { return false }
         let specialCharacterRegex = #"[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]"#
         return password.range(of: specialCharacterRegex, options: .regularExpression) != nil
+    }
+    
+    // Helper to check if password meets Supabase's stricter requirements
+    private func meetsSupabaseRequirements(_ password: String) -> Bool {
+        // Check for uppercase
+        let hasUppercase = password.range(of: #"[A-Z]"#, options: .regularExpression) != nil
+        // Check for lowercase
+        let hasLowercase = password.range(of: #"[a-z]"#, options: .regularExpression) != nil
+        // Check for digit
+        let hasDigit = password.range(of: #"[0-9]"#, options: .regularExpression) != nil
+        // Check for special character
+        let hasSpecial = password.range(of: #"[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]"#, options: .regularExpression) != nil
+        
+        return hasUppercase && hasLowercase && hasDigit && hasSpecial && password.count >= 6
     }
     
     // MARK: Error UI
@@ -255,6 +459,7 @@ struct SignUpScreen: View {
                 .foregroundColor(ForkiTheme.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
+        .padding(.leading, 5)
         .padding(.top, 2)
     }
 }
@@ -307,7 +512,7 @@ struct StyledTextField: View {
                         )
                 )
                 .accentColor(ForkiTheme.highlightText)
-                .textInputAutocapitalization(.never)
+                .textInputAutocapitalization(fieldType == .name ? .words : .never)
                 .disableAutocorrection(true)
             }
         }

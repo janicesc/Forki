@@ -11,7 +11,7 @@ struct AgeGenderScreen: View {
     @ObservedObject var data: OnboardingData
     @ObservedObject var navigator: OnboardingNavigator
     let onNext: () -> Void
-    var onDismiss: (() -> Void)? = nil  // Optional dismiss handler (e.g., from Profile Screen)
+    var onDismiss: (() -> Void)? = nil  // Optional dismiss handler (e.g., from Profile Screen or Sign Up/Sign In)
     
     @State private var currentAgeValue: Int = 25
     
@@ -23,14 +23,15 @@ struct AgeGenderScreen: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 16) {
                     // Progress Bar with Back Button
+                    // Always show back arrow on AgeGenderScreen
                     OnboardingProgressBar(
                         currentStep: navigator.currentStep,
                         totalSteps: navigator.totalSteps,
                         sectionIndex: navigator.getSectionIndex(for: navigator.currentStep),
-                        totalSections: 7,
-                        canGoBack: navigator.canGoBack(),
-                        onBack: { navigator.goBack() },
-                        onCustomBack: onDismiss  // Custom back handler when coming from Profile Screen
+                        totalSections: 6,
+                        canGoBack: true, // Always allow going back from AgeGenderScreen
+                        onBack: onDismiss ?? { }, // Use custom dismiss if available
+                        onCustomBack: onDismiss  // Custom back handler (e.g., from Profile Screen or Sign Up/Sign In) - takes precedence
                     )
                     .padding(.horizontal, 24)
                     .padding(.top, 12)
@@ -64,6 +65,7 @@ struct AgeGenderScreen: View {
                             Text("Which gender describes you best?")
                                 .font(.system(size: 18, weight: .semibold, design: .rounded))
                                 .foregroundColor(ForkiTheme.textPrimary)
+                                .padding(.bottom, 8) // Add padding below question
                             
                             HStack(spacing: 12) {
                                 ForEach(GenderChoice.allCases) { choice in
@@ -91,6 +93,7 @@ struct AgeGenderScreen: View {
                     .padding(.horizontal, 24)
                     .padding(.bottom, 32)
                 }
+                .frame(maxWidth: 460)
             }
         }
     }
@@ -165,9 +168,10 @@ private struct GenderPill: View {
         Button(action: action) {
             Text(choice.label)
                 .font(.system(size: 14, weight: .semibold, design: .rounded))
-                .padding(.vertical, 12)
-                .padding(.horizontal, 16)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
                 .frame(maxWidth: .infinity)
+                .frame(height: 40) // Reduced height for more compact buttons
                 .background(
                     RoundedRectangle(cornerRadius: 14)
                         .fill(isSelected ? ForkiTheme.surface : ForkiTheme.surface.opacity(0.6))
@@ -184,7 +188,7 @@ private struct GenderPill: View {
 }
 
 // MARK: - Helper Extension
-// Note: clamped(to:) extension is defined in BiometricsScreen.swift
+// Note: clamped(to:) extension is defined in OnboardingData.swift
 
 #Preview {
     AgeGenderScreen(

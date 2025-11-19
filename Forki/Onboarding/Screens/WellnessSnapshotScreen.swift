@@ -19,23 +19,22 @@ struct WellnessSnapshotScreen: View {
             ForkiTheme.backgroundGradient.ignoresSafeArea()
             
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 16) {
+                VStack(spacing: 10) {
                     
                     // PROGRESS BAR with Back Button
                     OnboardingProgressBar(
                         currentStep: navigator.currentStep,
                         totalSteps: navigator.totalSteps,
                         sectionIndex: navigator.getSectionIndex(for: navigator.currentStep),
-                        totalSections: 7,
+                        totalSections: 6,
                         canGoBack: navigator.canGoBack(),
                         onBack: { navigator.goBack() }
                     )
                     .padding(.horizontal, 24)
-                    .padding(.top, 12)
+                    .padding(.top, 4) // Further reduced to 4
                     
                     if let snapshot = snapshot {
                         snapshotContent(snapshot)
-                            .padding(.bottom, 24) // Add spacing above Continue button to match card spacing
                     } else {
                         loadingContent
                     }
@@ -51,6 +50,7 @@ struct WellnessSnapshotScreen: View {
                     .padding(.horizontal, 24)
                     .padding(.bottom, 32)
                 }
+                .frame(maxWidth: 460)
             }
         }
         .onAppear {
@@ -66,10 +66,10 @@ struct WellnessSnapshotScreen: View {
 extension WellnessSnapshotScreen {
     
     private func snapshotContent(_ snapshot: WellnessSnapshot) -> some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 20) {
             
             // TITLE + SHORT INTRO
-            VStack(spacing: 12) {
+            VStack(spacing: 10) {
                 Text("Meet Your Eating Pet,\nForki!")
                     .font(.system(size: 28, weight: .heavy, design: .rounded))
                     .foregroundColor(ForkiTheme.textPrimary)
@@ -81,6 +81,7 @@ extension WellnessSnapshotScreen {
                     .multilineTextAlignment(.center)
             }
             .padding(.horizontal, 24)
+            .padding(.top, -12) // Increased negative padding to move title up more
             
             ////////////////////////////////////////////////////////////
             // CARD 1 — BMI + BODY INFO + AVATAR
@@ -201,6 +202,7 @@ extension WellnessSnapshotScreen {
             .padding(20)
             .background(panelBordered)
             .padding(.horizontal, 24)
+            .padding(.bottom, 10) // Add 10px padding below to match 20px spacing between cards (10px from main VStack + 10px padding = 20px total)
         }
         .padding(.top, 12)
     }
@@ -330,7 +332,34 @@ private struct BMIScaleView: View {
                     }
                     
                     // BMI Indicator
-                    let bmiPosition = CGFloat((bmi - 15) / (40 - 15)) * geometry.size.width
+                    // Calculate indicator dimensions
+                    let indicatorWidth: CGFloat = 90
+                    let triangleWidth: CGFloat = 12
+                    let halfIndicatorWidth = indicatorWidth / 2
+                    
+                    // Calculate min/max positions to keep entire indicator visible
+                    let padding: CGFloat = halfIndicatorWidth
+                    let minPosition = padding
+                    let maxPosition = geometry.size.width - padding
+                    
+                    // Determine position and arrow alignment based on BMI value
+                    let isUnder15 = bmi < 15.0
+                    let isOver40 = bmi > 40.0
+                    
+                    let clampedBMI = max(15.0, min(40.0, bmi))
+                    let bmiPosition = CGFloat((clampedBMI - 15) / (40 - 15)) * geometry.size.width
+                    
+                    // Position the indicator container
+                    let indicatorPosition: CGFloat = {
+                        if isUnder15 {
+                            return minPosition
+                        } else if isOver40 {
+                            return maxPosition
+                        } else {
+                            return max(minPosition, min(maxPosition, bmiPosition))
+                        }
+                    }()
+                    
                     VStack(spacing: 4) {
                         Text("You - \(String(format: "%.1f", bmi))")
                             .font(.system(size: 12, weight: .bold, design: .rounded))
@@ -345,11 +374,24 @@ private struct BMIScaleView: View {
                                             .stroke(ForkiTheme.borderPrimary, lineWidth: 2)
                                     )
                             )
-                        Triangle()
-                            .fill(ForkiTheme.borderPrimary)
-                            .frame(width: 12, height: 8)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                        
+                        // Arrow positioned based on alignment
+                        HStack {
+                            if isOver40 {
+                                Spacer()
+                            }
+                            Triangle()
+                                .fill(ForkiTheme.borderPrimary)
+                                .frame(width: triangleWidth, height: 8)
+                            if isUnder15 {
+                                Spacer()
+                            }
+                        }
+                        .frame(width: indicatorWidth)
                     }
-                    .offset(x: max(0, min(bmiPosition - 6, geometry.size.width - 12)), y: 0)
+                    .frame(width: indicatorWidth)
+                    .offset(x: indicatorPosition - halfIndicatorWidth, y: 0)
                 }
             }
             .frame(height: 50)

@@ -31,7 +31,7 @@ struct GoalWeightScreen: View {
                             currentStep: navigator.currentStep,
                             totalSteps: navigator.totalSteps,
                             sectionIndex: navigator.getSectionIndex(for: navigator.currentStep),
-                            totalSections: 7,
+                            totalSections: 6,
                             canGoBack: navigator.canGoBack(),
                             onBack: { navigator.goBack() }
                         )
@@ -58,6 +58,12 @@ struct GoalWeightScreen: View {
                                     .focused($isGoalWeightFocused)
                                     .multilineTextAlignment(.center)
                                     .frame(maxWidth: .infinity)
+                                    .onAppear {
+                                        // Auto-focus goal weight field when screen appears for quick entry
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            isGoalWeightFocused = true
+                                        }
+                                    }
                                 
                                 Text(data.weightUnit.rawValue)
                                     .font(.system(size: 16, weight: .medium, design: .rounded))
@@ -94,6 +100,7 @@ struct GoalWeightScreen: View {
                         .padding(.horizontal, 24)
                         .padding(.bottom, 32)
                     }
+                    .frame(maxWidth: 460)
                 }
             }
         } else {

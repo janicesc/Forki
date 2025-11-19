@@ -10,8 +10,8 @@ import SwiftUI
 class OnboardingNavigator: ObservableObject {
     @Published var currentStep: Int = 0
     
-    // Total steps: 10 screens
-    let totalSteps = 10
+    // Total steps: 9 screens (Notifications screen removed)
+    let totalSteps = 9
     
     // Section mapping
     // Section 1 (Basic Info): steps 0-2 (Age/Gender, Height, Weight)
@@ -19,8 +19,7 @@ class OnboardingNavigator: ObservableObject {
     // Section 3 (Dietary): step 5 (Dietary Preferences)
     // Section 4 (Eating Habits): step 6 (Eating Habits)
     // Section 5 (Lifestyle): step 7 (Activity Level)
-    // Section 6 (Personalized Results): step 8 (Wellness Snapshot)
-    // Section 7 (Final Step): step 9 (Notifications)
+    // Section 6 (Personalized Results): step 8 (Wellness Snapshot - Final Step)
     
     func getSectionIndex(for step: Int) -> Int {
         switch step {
@@ -29,8 +28,7 @@ class OnboardingNavigator: ObservableObject {
         case 5: return 2 // Dietary
         case 6: return 3 // Eating Habits
         case 7: return 4 // Lifestyle
-        case 8: return 5 // Personalized Results
-        case 9: return 6 // Notifications
+        case 8: return 5 // Personalized Results (Final Step)
         default: return 0
         }
     }

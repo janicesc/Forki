@@ -65,10 +65,9 @@ struct OnboardingProgressBar: View {
                 if currentStep > 7 { return 1.0 }
                 return 0.0
             }
-        case 3: // Bar 4: Results + Notifications (steps 8-9)
+        case 3: // Bar 4: Results (step 8 - Final Step)
             switch currentStep {
-            case 8: return 1.0/2.0  // Wellness Snapshot - 1/2
-            case 9: return 2.0/2.0  // Notifications - 2/2
+            case 8: return 1.0/1.0  // Wellness Snapshot - Final Step
             default:
                 if currentStep < 8 { return 0.0 }
                 return 1.0

@@ -20,9 +20,13 @@ struct OnboardingFlow: View {
         switch navigator.currentStep {
         case 0:
             // Section 1: Basic Info - Age/Gender
+            // Always show back arrow - pass onDismiss if available, otherwise go back to previous screen
             AgeGenderScreen(data: data, navigator: navigator, onNext: {
                 navigator.goNext()
-            }, onDismiss: onDismiss)
+            }, onDismiss: onDismiss ?? {
+                // Default: if no custom dismiss handler, just go back in onboarding flow
+                navigator.goBack()
+            })
         case 1:
             // Section 1: Basic Info - Height
             HeightScreen(data: data, navigator: navigator) {
@@ -60,25 +64,26 @@ struct OnboardingFlow: View {
                 navigator.goNext()
             }
         case 8:
-            // Section 6: Personalized Results - Wellness Snapshot
+            // Section 6: Personalized Results - Wellness Snapshot (Final Step)
             WellnessSnapshotScreen(data: data, navigator: navigator, userData: userData) {
-                navigator.goNext()
-            }
-        case 9:
-            // Section 7: Final Step - Notifications
-            NotificationsScreen(data: data, navigator: navigator) {
                 // Complete onboarding and navigate to home
                 // Extract personaID from WellnessSnapshot before completing
                 let snapshot = WellnessSnapshotCalculator.calculateSnapshot(from: data)
                 let personaID = snapshot.persona.personaType
-                
-                // Store personaID and recommended calories in UserDefaults
+
+                // Save
                 UserDefaults.standard.set(personaID, forKey: "hp_personaID")
                 UserDefaults.standard.set(snapshot.recommendedCalories, forKey: "hp_recommendedCalories")
-                
-                // Set personaID in OnboardingData
+
                 data.personaIDValue = personaID
-                
+
+                // 🔥 IMPORTANT: Initialize NutritionState for Day 1
+                userData.nutrition.initializeFromSnapshot(
+                    personaID: personaID,
+                    recommendedCalories: snapshot.recommendedCalories
+                )
+
+                // Continue to home
                 onComplete(data)
             }
         default:

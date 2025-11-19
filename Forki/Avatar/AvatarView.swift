@@ -80,12 +80,10 @@ struct AvatarVideoPlayer: View {
                         player.pause()
                     }
             } else {
-                // Fallback image while video loads
-                Image("habitpet")
-                    .resizable()
-                    .scaledToFit()
+                // Fallback placeholder while video loads
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(ForkiTheme.surface.opacity(0.3))
                     .frame(width: size, height: size)
-                    .clipShape(RoundedRectangle(cornerRadius: 24))
             }
         }
         .onAppear {

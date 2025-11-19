@@ -31,7 +31,7 @@ struct ActivityLevelScreen: View {
                         currentStep: navigator.currentStep,
                         totalSteps: navigator.totalSteps,
                         sectionIndex: navigator.getSectionIndex(for: navigator.currentStep),
-                        totalSections: 7,
+                        totalSections: 6,
                         canGoBack: navigator.canGoBack(),
                         onBack: { navigator.goBack() }
                     )
@@ -75,6 +75,7 @@ struct ActivityLevelScreen: View {
                     .padding(.horizontal, 24)
                     .padding(.bottom, 32)
                 }
+                .frame(maxWidth: 460)
             }
         }
     }

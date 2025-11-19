@@ -26,7 +26,7 @@ struct WeightScreen: View {
                         currentStep: navigator.currentStep,
                         totalSteps: navigator.totalSteps,
                         sectionIndex: navigator.getSectionIndex(for: navigator.currentStep),
-                        totalSections: 7,
+                        totalSections: 6,
                         canGoBack: navigator.canGoBack(),
                         onBack: { navigator.goBack() }
                     )
@@ -96,6 +96,12 @@ struct WeightScreen: View {
                                 .onTapGesture {
                                     isWeightFocused = true
                                 }
+                                .onAppear {
+                                    // Auto-focus weight field when screen appears for quick entry
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                        isWeightFocused = true
+                                    }
+                                }
                                 .onChange(of: data.weightUnit == .lbs ? data.weightLbs : data.weightKg) { _, newValue in
                                     // Filter to allow only numeric input and decimal point
                                     let filtered = newValue.filter { $0.isNumber || $0 == "." }
@@ -108,6 +114,12 @@ struct WeightScreen: View {
                                         } else {
                                             data.weightKg = finalValue
                                         }
+                                    }
+                                }
+                                .onChange(of: data.weightUnit) { _, _ in
+                                    // Auto-focus when unit changes
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                        isWeightFocused = true
                                     }
                                 }
                             
@@ -140,6 +152,7 @@ struct WeightScreen: View {
                     .padding(.horizontal, 24)
                     .padding(.bottom, 32)
                 }
+                .frame(maxWidth: 460)
             }
         }
     }

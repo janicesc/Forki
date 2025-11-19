@@ -16,6 +16,11 @@ struct SignInScreen: View {
     @State private var password: String = ""
     @State private var showUsernameError: Bool = false
     @State private var showPasswordError: Bool = false
+    @State private var usernameErrorMessage: String = ""
+    @State private var passwordErrorMessage: String = ""
+    @State private var isLoading: Bool = false
+    @State private var showTerms: Bool = false
+    @State private var showPrivacy: Bool = false
     @FocusState private var focusedField: Field?
     
     enum Field {
@@ -39,44 +44,71 @@ struct SignInScreen: View {
                     }
                     .frame(maxWidth: 420)
                     .padding(.horizontal, 24)
-                    .padding(.top, 80)
-                    .padding(.bottom, 36)
+                    .padding(.top, 100)
+                    .padding(.bottom, 200) // Extra padding for fixed buttons
                 }
-                
-                // Bottom buttons
+                .ignoresSafeArea(.keyboard, edges: .bottom)
+            }
+            
+            // Fixed buttons overlay - not affected by keyboard
+            VStack {
+                Spacer()
                 VStack(spacing: 8) {
                     HStack(spacing: 12) {
                         Button {
                             withAnimation(.easeInOut) { currentScreen = 1 }
                         } label: {
                             Text("Sign Up")
-                                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                .font(.system(size: 16, weight: .heavy, design: .rounded))
                                 .foregroundColor(ForkiTheme.textPrimary)
                                 .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                                .background(ForkiTheme.surface)
-                                .cornerRadius(12)
-                                .shadow(color: ForkiTheme.borderPrimary.opacity(0.1), radius: 4, x: 0, y: 2)
+                                .padding(.vertical, 18)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                        .fill(ForkiTheme.surface)
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                                .stroke(ForkiTheme.borderPrimary.opacity(0.3), lineWidth: 2)
+                                        )
+                                )
+                                .shadow(color: ForkiTheme.actionShadow, radius: 10, x: 0, y: 6)
                         }
+                        .buttonStyle(PlainButtonStyle())
                         
                         Button {
                             validateForm()
                         } label: {
-                            Text("Sign In")
-                                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 16)
-                                .background(
+                            if isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 18)
+                            } else {
+                                Text("Sign In")
+                                    .font(.system(size: 16, weight: .heavy, design: .rounded))
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 18)
+                            }
+                        }
+                        .disabled(isLoading)
+                        .background(
+                            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                .fill(
                                     LinearGradient(
-                                        colors: [ForkiTheme.actionLogFood, ForkiTheme.actionLogFoodEnd],
+                                        colors: [Color(hex: "#8DD4D1"), Color(hex: "#6FB8B5")],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
                                     )
                                 )
-                                .cornerRadius(12)
-                                .shadow(color: ForkiTheme.borderPrimary.opacity(0.1), radius: 4, x: 0, y: 2)
-                        }
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                        .stroke(Color(hex: "#7AB8B5"), lineWidth: 4)
+                                )
+                        )
+                        .foregroundColor(.white)
+                        .shadow(color: ForkiTheme.actionShadow, radius: 10, x: 0, y: 6)
+                        .buttonStyle(PlainButtonStyle())
                     }
                     
                     // Separate text below Sign Up button (centered to Sign Up button width)
@@ -101,8 +133,18 @@ struct SignInScreen: View {
                     .padding(.top, 2)
                 }
                 .padding(.horizontal, 24)
-                .padding(.bottom, 32)
+                .padding(.bottom, 80)
             }
+            .ignoresSafeArea(.keyboard, edges: .bottom)
+        }
+        .onAppear {
+            // Clear all fields when screen appears (e.g., after sign out or navigation)
+            username = ""
+            password = ""
+            showUsernameError = false
+            showPasswordError = false
+            usernameErrorMessage = ""
+            focusedField = nil
         }
     }
     
@@ -120,19 +162,26 @@ struct SignInScreen: View {
     // MARK: Form
     private var formSection: some View {
         VStack(spacing: 20) {
-            // Username Input
+            // Email Input (used as username for Supabase Auth)
             VStack(alignment: .leading, spacing: 6) {
                 SignInStyledTextField(
-                    title: "Username",
-                    placeholder: "Value",
+                    title: "Email",
+                    placeholder: "your@email.com",
                     text: $username,
                     isError: showUsernameError,
                     focusedField: $focusedField,
                     fieldType: .username
                 )
+                .onChange(of: username) { _, newValue in
+                    // Clear error state when email becomes valid
+                    if !newValue.trimmingCharacters(in: .whitespaces).isEmpty && isValidEmail(newValue) {
+                        showUsernameError = false
+                        usernameErrorMessage = ""
+                    }
+                }
                 
                 if showUsernameError {
-                    errorMessage("Please fill out this field.")
+                    errorMessage(usernameErrorMessage.isEmpty ? "Please fill out this field." : usernameErrorMessage)
                 }
             }
             
@@ -147,14 +196,23 @@ struct SignInScreen: View {
                     fieldType: .password,
                     isSecure: true
                 )
+                .onChange(of: password) { _, newValue in
+                    // Clear error state when password becomes valid
+                    if isValidPassword(newValue) {
+                        showPasswordError = false
+                        passwordErrorMessage = ""
+                    }
+                }
                 
                 if showPasswordError {
-                    errorMessage("Must be 6 or more characters and at least 1 special character")
+                    // Show error message - either authentication error or validation error
+                    errorMessage(passwordErrorMessage.isEmpty ? "Must be 6 or more characters and at least 1 special character" : passwordErrorMessage)
                 } else {
                     // Show requirements as helper text
                     Text("Must be 6 or more characters and at least 1 special character")
                         .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(ForkiTheme.textSecondary.opacity(0.7))
+                        .padding(.leading, 5)
                         .padding(.top, 2)
                 }
             }
@@ -163,49 +221,184 @@ struct SignInScreen: View {
     
     // MARK: Footer
     private var footerSection: some View {
-        Text("By continuing, you agree to our Terms & Privacy Policy")
-            .font(.system(size: 13, weight: .medium, design: .rounded))
-            .foregroundColor(ForkiTheme.textSecondary.opacity(0.8))
-            .multilineTextAlignment(.center)
+        HStack(spacing: 0) {
+            Text("By continuing, you agree to our ")
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundColor(ForkiTheme.textSecondary.opacity(0.8))
+            
+            Button(action: {
+                showTerms = true
+            }) {
+                Text("Terms")
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundColor(ForkiTheme.borderPrimary)
+            }
+            
+            Text(" & ")
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundColor(ForkiTheme.textSecondary.opacity(0.8))
+            
+            Button(action: {
+                showPrivacy = true
+            }) {
+                Text(" Privacy Policy")
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundColor(ForkiTheme.borderPrimary)
+            }
+            
+            Text(".")
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundColor(ForkiTheme.textSecondary.opacity(0.8))
+        }
+        .multilineTextAlignment(.center)
+        .sheet(isPresented: $showTerms) {
+            TermsOfServiceView(onDismiss: {
+                showTerms = false
+            })
+        }
+        .sheet(isPresented: $showPrivacy) {
+            PrivacyPolicyView(onDismiss: {
+                showPrivacy = false
+            })
+        }
     }
     
     // MARK: Validation
     private func validateForm() {
         var isValid = true
         
+        // Reset errors
+        showUsernameError = false
+        showPasswordError = false
+        usernameErrorMessage = ""
+        passwordErrorMessage = ""
+        
         if username.trimmingCharacters(in: .whitespaces).isEmpty {
             showUsernameError = true
+            usernameErrorMessage = "Please fill out this field."
             isValid = false
-        } else {
-            showUsernameError = false
+        } else if !isValidEmail(username) {
+            showUsernameError = true
+            usernameErrorMessage = "Please enter a valid email address."
+            isValid = false
         }
         
-        if !isValidPassword(password) {
+        if password.isEmpty {
             showPasswordError = true
             isValid = false
-        } else {
-            showPasswordError = false
+        } else if !isValidPassword(password) {
+            showPasswordError = true
+            isValid = false
         }
         
         if isValid {
-            userData.email = username
+            isLoading = true
             
-            // Save signin info
-            UserDefaults.standard.set(username, forKey: "hp_userEmail")
-            if let savedName = UserDefaults.standard.string(forKey: "hp_userName") {
-                userData.name = savedName
-            }
-            
-            // Check if user has already onboarded
-            if UserDefaults.standard.bool(forKey: "hp_hasOnboarded") {
-                // Already onboarded, go to Home Screen
-                UserDefaults.standard.set(true, forKey: "hp_isSignedIn")
-                withAnimation(.easeInOut) { currentScreen = 6 }
-            } else {
-                // Not onboarded yet, start onboarding
-                onSignInComplete?()
+            // Sign in with Supabase
+            Task {
+                do {
+                    let (userId, session) = try await SupabaseAuthService.shared.signIn(
+                        username: username,
+                        password: password
+                    )
+                    
+                    // Save session
+                    SupabaseAuthService.shared.saveSession(session)
+                    
+                    // Load user data from Supabase (use session token for authentication)
+                    if let loadedUserData = try await SupabaseAuthService.shared.loadUserData(userId: userId, accessToken: session.accessToken) {
+                        await MainActor.run {
+                            // Update local userData with Supabase data
+                            userData.name = loadedUserData.name
+                            userData.email = loadedUserData.email
+                            userData.age = loadedUserData.age
+                            userData.gender = loadedUserData.gender
+                            userData.height = loadedUserData.height
+                            userData.weight = loadedUserData.weight
+                            userData.goal = loadedUserData.goal
+                            userData.goalDuration = loadedUserData.goalDuration
+                            userData.foodPreferences = loadedUserData.foodPreferences
+                            userData.notifications = loadedUserData.notifications
+                            userData.selectedCharacter = loadedUserData.selectedCharacter
+                            userData.personaID = loadedUserData.personaID
+                            userData.recommendedCalories = loadedUserData.recommendedCalories
+                            userData.eatingPattern = loadedUserData.eatingPattern
+                            userData.BMI = loadedUserData.BMI
+                            userData.bodyType = loadedUserData.bodyType
+                            userData.metabolism = loadedUserData.metabolism
+                            userData.recommendedMacros = loadedUserData.recommendedMacros
+                            
+                            // Also save locally (continue to save userData as we already do)
+                            UserDefaults.standard.set(username, forKey: "hp_userEmail")
+                            UserDefaults.standard.set(userData.name, forKey: "hp_userName")
+                            UserDefaults.standard.set(userId, forKey: "supabase_user_id")
+                            UserDefaults.standard.set(loadedUserData.personaID, forKey: "hp_personaID")
+                            UserDefaults.standard.set(loadedUserData.recommendedCalories, forKey: "hp_recommendedCalories")
+                            
+                            // Initialize nutrition state with persona and calories to restore avatar state
+                            if loadedUserData.personaID > 0 && loadedUserData.recommendedCalories > 0 {
+                                userData.nutrition.initializeFromSnapshot(
+                                    personaID: loadedUserData.personaID,
+                                    recommendedCalories: loadedUserData.recommendedCalories
+                                )
+                            }
+                        }
+                    } else {
+                        // User exists but no profile data yet, use defaults
+                        await MainActor.run {
+                            userData.email = username
+                            UserDefaults.standard.set(username, forKey: "hp_userEmail")
+                            UserDefaults.standard.set(userId, forKey: "supabase_user_id")
+                        }
+                    }
+                    
+                    await MainActor.run {
+                        isLoading = false
+                        
+                        // Always navigate to Home Screen after successful sign in
+                        // The user's data and session are now loaded
+                        UserDefaults.standard.set(true, forKey: "hp_isSignedIn")
+                        UserDefaults.standard.set(true, forKey: "hp_hasOnboarded") // Mark as onboarded if they have data
+                        
+                        // Navigate to Home Screen (screen 6)
+                        withAnimation(.easeInOut) { 
+                            currentScreen = 6 
+                        }
+                    }
+                } catch let error as SupabaseAuthService.AuthError {
+                    await MainActor.run {
+                        isLoading = false
+                        
+                        switch error {
+                        case .userNotFound:
+                            showUsernameError = true
+                            usernameErrorMessage = "No account found with this email. Want to sign up?"
+                            showPasswordError = false
+                            passwordErrorMessage = ""
+                        case .invalidCredentials:
+                            showPasswordError = true
+                            passwordErrorMessage = "Incorrect password. Try again?"
+                            showUsernameError = false
+                            usernameErrorMessage = ""
+                        default:
+                            showPasswordError = true
+                            passwordErrorMessage = error.errorDescription ?? "An error occurred. Please try again."
+                        }
+                    }
+                } catch {
+                    await MainActor.run {
+                        isLoading = false
+                        showPasswordError = true
+                        passwordErrorMessage = "An error occurred. Please try again."
+                    }
+                }
             }
         }
+    }
+    
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = #"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"#
+        return email.range(of: emailRegex, options: .regularExpression) != nil
     }
     
     private func isValidPassword(_ password: String) -> Bool {
@@ -226,6 +419,7 @@ struct SignInScreen: View {
                 .foregroundColor(ForkiTheme.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
+        .padding(.leading, 5)
         .padding(.top, 2)
     }
 }

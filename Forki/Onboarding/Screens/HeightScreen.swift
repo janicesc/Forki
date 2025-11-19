@@ -28,7 +28,7 @@ struct HeightScreen: View {
                         currentStep: navigator.currentStep,
                         totalSteps: navigator.totalSteps,
                         sectionIndex: navigator.getSectionIndex(for: navigator.currentStep),
-                        totalSections: 7,
+                        totalSections: 6,
                         canGoBack: navigator.canGoBack(),
                         onBack: { navigator.goBack() }
                     )
@@ -100,11 +100,36 @@ struct HeightScreen: View {
                                         .onTapGesture {
                                             isFeetFocused = true
                                         }
+                                        .onAppear {
+                                            // Auto-focus feet field when screen appears for quick entry
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                                if data.heightUnit == .feet {
+                                                    isFeetFocused = true
+                                                }
+                                            }
+                                        }
                                         .onChange(of: data.heightFeet) { _, newValue in
                                             // Filter to allow only numeric input
                                             let filtered = newValue.filter { $0.isNumber }
                                             if filtered != newValue {
                                                 data.heightFeet = filtered
+                                            }
+                                            
+                                            // Auto-focus to inches when valid feet value is entered
+                                            if let feet = Int(filtered), feet >= 3 && feet <= 8 {
+                                                // Small delay to allow user to finish typing
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                    isFeetFocused = false
+                                                    isInchesFocused = true
+                                                }
+                                            }
+                                        }
+                                        .onChange(of: data.heightUnit) { _, _ in
+                                            // Auto-focus when unit changes to feet
+                                            if data.heightUnit == .feet {
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                    isFeetFocused = true
+                                                }
                                             }
                                         }
                                     
@@ -168,11 +193,27 @@ struct HeightScreen: View {
                                     .onTapGesture {
                                         isCmFocused = true
                                     }
+                                    .onAppear {
+                                        // Auto-focus cm field when screen appears for quick entry
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            if data.heightUnit == .cm {
+                                                isCmFocused = true
+                                            }
+                                        }
+                                    }
                                     .onChange(of: data.heightCm) { _, newValue in
                                         // Filter to allow only numeric input
                                         let filtered = newValue.filter { $0.isNumber }
                                         if filtered != newValue {
                                             data.heightCm = filtered
+                                        }
+                                    }
+                                    .onChange(of: data.heightUnit) { _, _ in
+                                        // Auto-focus when unit changes to cm
+                                        if data.heightUnit == .cm {
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                isCmFocused = true
+                                            }
                                         }
                                     }
                                 
@@ -200,6 +241,7 @@ struct HeightScreen: View {
                     .padding(.horizontal, 24)
                     .padding(.bottom, 32)
                 }
+                .frame(maxWidth: 460)
             }
         }
     }
@@ -269,4 +311,6 @@ private struct UnitToggleButton: View {
         onNext: {}
     )
 }
+
+
 

@@ -454,20 +454,41 @@ struct HomeScreen: View {
                         // and navigate to OnboardingFlow from ForkiFlow
                     },
                     onSignOut: {
-                        // Sign out user - clear UserDefaults
+                        // Sign out user - clear local session state only
+                        // User data remains in Supabase database and will be restored on sign in
                         UserDefaults.standard.set(false, forKey: "hp_isSignedIn")
                         UserDefaults.standard.set(false, forKey: "hp_hasOnboarded")
-                        UserDefaults.standard.removeObject(forKey: "hp_userName")
-                        UserDefaults.standard.removeObject(forKey: "hp_userEmail")
-                        UserDefaults.standard.removeObject(forKey: "hp_personaID")
-                        UserDefaults.standard.removeObject(forKey: "hp_recommendedCalories")
+                        // Note: We keep user data in UserDefaults for potential quick restore,
+                        // but clear the sign-in flag so user must authenticate again
+                        
+                        // Clear Supabase session (authentication only, data remains in database)
+                        SupabaseAuthService.shared.clearSession()
+                        
+                        // Clear in-memory user data for privacy (data still saved in Supabase)
+                        userData.name = ""
+                        userData.email = ""
+                        userData.age = ""
+                        userData.gender = ""
+                        userData.height = ""
+                        userData.weight = ""
+                        userData.goal = ""
+                        userData.personaID = 0
+                        userData.recommendedCalories = 0
+                        
+                        // Clear in-memory nutrition state for privacy (data still saved in Supabase)
+                        nutrition.loggedMeals = []
+                        nutrition.caloriesCurrent = 0
+                        nutrition.proteinCurrent = 0
+                        nutrition.carbsCurrent = 0
+                        nutrition.fatsCurrent = 0
                         
                         // Close profile screen
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                             showProfile = false
                         }
                         
-                        // Navigate to Sign Up screen
+                        // Navigate to Sign Up screen (empty, ready for new sign up or sign in)
+                        // When user signs in again, their data will be loaded from Supabase
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             signOutCallback()
                         }
@@ -505,15 +526,16 @@ struct HomeScreen: View {
     // MARK: - Sections
     
     private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 28) {
+        VStack(alignment: .leading, spacing: 26) {
             HStack(alignment: .top) {
-                VStack(alignment: .center, spacing: 4) {
+                // Logo and subtitle - proportionally sized (FORKI: 40, NUTRITION PET: 15)
+                VStack(alignment: .leading, spacing: 4) {
                     Text("FORKI")
-                        .font(.system(size: 40, weight: .black, design: .rounded))
+                        .font(.system(size: 40, weight: .heavy, design: .rounded))
                         .foregroundColor(ForkiTheme.logo)
                         .shadow(color: ForkiTheme.logoShadow.opacity(0.35), radius: 6, x: 0, y: 4)
                     Text("NUTRITION PET")
-                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .font(.system(size: 15, weight: .semibold, design: .rounded))
                         .foregroundColor(ForkiTheme.textSecondary)
                         .tracking(1.6)
                 }

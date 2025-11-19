@@ -7,6 +7,13 @@
 
 import SwiftUI
 
+// MARK: - FoodOption Model
+struct FoodOption: Identifiable {
+    let id: String
+    let name: String
+    let icon: String
+}
+
 struct DietaryPreferencesScreen: View {
     @ObservedObject var data: OnboardingData
     @ObservedObject var navigator: OnboardingNavigator
@@ -36,186 +43,240 @@ struct DietaryPreferencesScreen: View {
         ZStack {
             ForkiTheme.backgroundGradient
                 .ignoresSafeArea()
+                .onTapGesture {
+                    // Dismiss keyboard when tapping background
+                    if isOtherFocused {
+                        isOtherFocused = false
+                    }
+                }
             
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 16) {
-                    // Progress Bar with Back Button
-                    OnboardingProgressBar(
-                        currentStep: navigator.currentStep,
-                        totalSteps: navigator.totalSteps,
-                        sectionIndex: navigator.getSectionIndex(for: navigator.currentStep),
-                        totalSections: 7,
-                        canGoBack: navigator.canGoBack(),
-                        onBack: { navigator.goBack() }
-                    )
-                    .padding(.horizontal, 24)
-                    .padding(.top, 12)
-                    
-                    // Content
-                    VStack(spacing: 32) {
-                        // Header
-                        VStack(spacing: 8) {
-                            Text("What type of diet do you prefer?")
-                                .font(.system(size: 28, weight: .heavy, design: .rounded))
-                                .foregroundColor(ForkiTheme.textPrimary)
-                                .multilineTextAlignment(.center)
-                            
-                            Text("Choose all that apply")
-                                .font(.system(size: 15, weight: .medium, design: .rounded))
-                                .foregroundColor(ForkiTheme.textSecondary)
-                                .multilineTextAlignment(.center)
-                        }
-                        .padding(.horizontal, 16)
-                        
-                        // Preferences Section - Two Column Grid
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("Dietary Preferences")
-                                .font(.system(size: 18, weight: .semibold, design: .rounded))
-                                .foregroundColor(ForkiTheme.textPrimary)
-                            
-                            VStack(spacing: 8) {
-                                // No restrictions - Full width
-                                if let noRestrictions = dietaryPreferences.first(where: { $0.id == "no_restrictions" }) {
-                                    Button(action: {
-                                        if data.dietaryPreferences.contains(noRestrictions.id) {
-                                            data.dietaryPreferences.remove(noRestrictions.id)
-                                        } else {
-                                            data.dietaryPreferences.removeAll()
-                                            data.dietaryPreferences.insert(noRestrictions.id)
-                                        }
-                                    }) {
-                                        HStack(spacing: 6) {
-                                            Text(noRestrictions.icon)
-                                            Text(noRestrictions.name)
-                                                .font(.system(size: 12, weight: .medium, design: .rounded))
-                                                .foregroundColor(ForkiTheme.textPrimary)
-                                        }
-                                        .padding(6)
-                                        .frame(maxWidth: .infinity)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                .fill(data.dietaryPreferences.contains(noRestrictions.id) ? ForkiTheme.surface.opacity(0.8) : ForkiTheme.surface.opacity(0.4))
-                                        )
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                .stroke(data.dietaryPreferences.contains(noRestrictions.id) ? ForkiTheme.borderPrimary : ForkiTheme.borderPrimary.opacity(0.3), lineWidth: data.dietaryPreferences.contains(noRestrictions.id) ? 2 : 1.5)
-                                        )
-                                    }
-                                    .buttonStyle(PlainButtonStyle())
-                                }
-                                
-                                // Rest of preferences - Two column grid
-                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                                    ForEach(dietaryPreferences.filter { $0.id != "no_restrictions" }) { pref in
-                                        Button(action: {
-                                            if data.dietaryPreferences.contains(pref.id) {
-                                                data.dietaryPreferences.remove(pref.id)
-                                            } else {
-                                                data.dietaryPreferences.remove("no_restrictions")
-                                                data.dietaryPreferences.insert(pref.id)
-                                            }
-                                        }) {
-                                            HStack(spacing: 6) {
-                                                Text(pref.icon)
-                                                Text(pref.name)
-                                                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                                                    .foregroundColor(ForkiTheme.textPrimary)
-                                            }
-                                            .padding(6)
-                                            .frame(maxWidth: .infinity)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                    .fill(data.dietaryPreferences.contains(pref.id) ? ForkiTheme.surface.opacity(0.8) : ForkiTheme.surface.opacity(0.4))
-                                            )
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                    .stroke(data.dietaryPreferences.contains(pref.id) ? ForkiTheme.borderPrimary : ForkiTheme.borderPrimary.opacity(0.3), lineWidth: data.dietaryPreferences.contains(pref.id) ? 2 : 1.5)
-                                            )
-                                        }
-                                        .buttonStyle(PlainButtonStyle())
-                                    }
-                                }
-                            }
-                        }
-                        .padding(.horizontal, 6)
-                        
-                        // Restrictions Section - Two Column Grid
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("Allergies / Restrictions")
-                                .font(.system(size: 18, weight: .semibold, design: .rounded))
-                                .foregroundColor(ForkiTheme.textPrimary)
-                            
-                            Text("Select items you cannot have")
-                                .font(.system(size: 13, weight: .medium, design: .rounded))
-                                .foregroundColor(ForkiTheme.textSecondary)
-                            
-                            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                                ForEach(restrictions) { restriction in
-                                    Button(action: {
-                                        if data.dietaryRestrictions.contains(restriction.id) {
-                                            data.dietaryRestrictions.remove(restriction.id)
-                                            if restriction.id == "other" {
-                                                data.otherRestriction = ""
-                                            }
-                                        } else {
-                                            data.dietaryRestrictions.insert(restriction.id)
-                                        }
-                                    }) {
-                                        HStack(spacing: 6) {
-                                            Text(restriction.icon)
-                                            Text(restriction.name)
-                                                .font(.system(size: 12, weight: .medium, design: .rounded))
-                                                .foregroundColor(ForkiTheme.textPrimary)
-                                        }
-                                        .padding(6)
-                                        .frame(maxWidth: .infinity)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                .fill(data.dietaryRestrictions.contains(restriction.id) ? ForkiTheme.surface.opacity(0.8) : ForkiTheme.surface.opacity(0.4))
-                                        )
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                .stroke(data.dietaryRestrictions.contains(restriction.id) ? ForkiTheme.borderPrimary : ForkiTheme.borderPrimary.opacity(0.3), lineWidth: data.dietaryRestrictions.contains(restriction.id) ? 2 : 1.5)
-                                        )
-                                    }
-                                    .buttonStyle(PlainButtonStyle())
-                                    
-                                    // Show text field in grid next to "Other" button
-                                    if restriction.id == "other" && data.dietaryRestrictions.contains("other") {
-                                        TextField("Please specify", text: $data.otherRestriction)
-                                            .font(.system(size: 12, weight: .medium, design: .rounded))
-                                            .foregroundColor(ForkiTheme.textPrimary)
-                                            .padding(6)
-                                            .frame(maxWidth: .infinity)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                    .fill(ForkiTheme.surface.opacity(0.6))
-                                            )
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                                    .stroke(ForkiTheme.borderPrimary.opacity(0.4), lineWidth: 2)
-                                            )
-                                            .focused($isOtherFocused)
-                                    }
-                                }
-                            }
-                        }
-                        .padding(.horizontal, 6)
+                    progressBarSection
+                    contentSection
+                    nextButtonSection
+                }
+                .frame(maxWidth: 460)
+            }
+        }
+    }
+    
+    // MARK: - Sections
+    
+    private var progressBarSection: some View {
+        OnboardingProgressBar(
+            currentStep: navigator.currentStep,
+            totalSteps: navigator.totalSteps,
+            sectionIndex: navigator.getSectionIndex(for: navigator.currentStep),
+            totalSections: 6,
+            canGoBack: navigator.canGoBack(),
+            onBack: { navigator.goBack() }
+        )
+        .padding(.horizontal, 24)
+        .padding(.top, 12)
+    }
+    
+    private var contentSection: some View {
+        VStack(spacing: 20) {
+            headerSection
+            preferencesSection
+            restrictionsSection
+        }
+        .forkiPanel()
+        .padding(.horizontal, 24)
+    }
+    
+    private var headerSection: some View {
+        VStack(spacing: 6) {
+            Text("What type of diet do you prefer?")
+                .font(.system(size: 28, weight: .heavy, design: .rounded))
+                .foregroundColor(ForkiTheme.textPrimary)
+                .multilineTextAlignment(.center)
+            
+            Text("Choose all that apply")
+                .font(.system(size: 15, weight: .medium, design: .rounded))
+                .foregroundColor(ForkiTheme.textSecondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 4) // Reduce spacing below header
+    }
+    
+    private var preferencesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Dietary Preferences")
+                .font(.system(size: 18, weight: .semibold, design: .rounded))
+                .foregroundColor(ForkiTheme.textPrimary)
+            
+            VStack(spacing: 8) {
+                noRestrictionsButton
+                preferencesGrid
+            }
+        }
+        .padding(.horizontal, 6)
+    }
+    
+    private var noRestrictionsButton: some View {
+        Group {
+            if let noRestrictions = dietaryPreferences.first(where: { $0.id == "no_restrictions" }) {
+                Button(action: {
+                    if data.dietaryPreferences.contains(noRestrictions.id) {
+                        data.dietaryPreferences.remove(noRestrictions.id)
+                    } else {
+                        data.dietaryPreferences.removeAll()
+                        data.dietaryPreferences.insert(noRestrictions.id)
                     }
-                    .forkiPanel()
-                    .padding(.horizontal, 24)
-                    
-                    // Next Button
-                    OnboardingPrimaryButton(
-                        isEnabled: !data.dietaryPreferences.isEmpty || !data.dietaryRestrictions.isEmpty
-                    ) {
-                        onNext()
+                }) {
+                    preferenceButtonContent(icon: noRestrictions.icon, name: noRestrictions.name, isSelected: data.dietaryPreferences.contains(noRestrictions.id))
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+    }
+    
+    private var preferencesGrid: some View {
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+            ForEach(dietaryPreferences.filter { $0.id != "no_restrictions" }) { pref in
+                Button(action: {
+                    if data.dietaryPreferences.contains(pref.id) {
+                        data.dietaryPreferences.remove(pref.id)
+                    } else {
+                        data.dietaryPreferences.remove("no_restrictions")
+                        data.dietaryPreferences.insert(pref.id)
                     }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 32)
+                }) {
+                    preferenceButtonContent(icon: pref.icon, name: pref.name, isSelected: data.dietaryPreferences.contains(pref.id))
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+    }
+    
+    private var restrictionsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Allergies / Restrictions")
+                .font(.system(size: 18, weight: .semibold, design: .rounded))
+                .foregroundColor(ForkiTheme.textPrimary)
+            
+            Text("Select items you cannot have")
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundColor(ForkiTheme.textSecondary)
+            
+            restrictionsGrid
+        }
+        .padding(.horizontal, 6)
+    }
+    
+    private var restrictionsGrid: some View {
+        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+            ForEach(restrictions) { restriction in
+                restrictionButton(for: restriction)
+                
+                // Show text field to the right of "Other" button when selected
+                if restriction.id == "other" && data.dietaryRestrictions.contains("other") {
+                    otherTextField
                 }
             }
         }
+    }
+    
+    private func restrictionButton(for restriction: FoodOption) -> some View {
+        Button(action: {
+            // If keyboard is visible, dismiss it first before handling button action
+            // This prevents accidental button taps while typing
+            if isOtherFocused {
+                isOtherFocused = false
+                // Wait for keyboard to dismiss before processing button action
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    handleRestrictionToggle(restriction)
+                }
+            } else {
+                handleRestrictionToggle(restriction)
+            }
+        }) {
+            preferenceButtonContent(icon: restriction.icon, name: restriction.name, isSelected: data.dietaryRestrictions.contains(restriction.id))
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    private func handleRestrictionToggle(_ restriction: FoodOption) {
+        if data.dietaryRestrictions.contains(restriction.id) {
+            data.dietaryRestrictions.remove(restriction.id)
+            if restriction.id == "other" {
+                data.otherRestriction = ""
+            }
+        } else {
+            data.dietaryRestrictions.insert(restriction.id)
+        }
+    }
+    
+    private var otherTextField: some View {
+        ZStack {
+            // Placeholder text (more visible)
+            if data.otherRestriction.isEmpty {
+                Text("Please specify")
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .foregroundColor(ForkiTheme.textSecondary.opacity(0.85))
+                    .multilineTextAlignment(.center)
+            }
+            
+            // TextField - match button text styling exactly
+            TextField("", text: $data.otherRestriction)
+                .focused($isOtherFocused)
+                .multilineTextAlignment(.center)
+                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                .foregroundColor(ForkiTheme.textPrimary)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.none)
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 10)
+        .frame(maxWidth: .infinity)
+        .frame(height: 40) // Match button height exactly (reduced from 48)
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(ForkiTheme.surface.opacity(0.4)) // Match unselected button opacity
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(isOtherFocused ? ForkiTheme.borderPrimary : ForkiTheme.borderPrimary.opacity(0.3), lineWidth: isOtherFocused ? 2 : 1.5) // Match button border exactly
+        )
+    }
+    
+    private var nextButtonSection: some View {
+        OnboardingPrimaryButton(
+            isEnabled: !data.dietaryPreferences.isEmpty || !data.dietaryRestrictions.isEmpty
+        ) {
+            onNext()
+        }
+        .padding(.horizontal, 24)
+        .padding(.bottom, 32)
+    }
+    
+    // MARK: - Helper Views
+    
+    private func preferenceButtonContent(icon: String, name: String, isSelected: Bool) -> some View {
+        HStack(spacing: 8) {
+            Text(icon)
+                .font(.system(size: 18))
+            Text(name)
+                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                .foregroundColor(ForkiTheme.textPrimary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 10)
+        .frame(maxWidth: .infinity)
+        .frame(height: 40) // Reduced from 48 to 40 for more compact buttons
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(isSelected ? ForkiTheme.surface.opacity(0.8) : ForkiTheme.surface.opacity(0.4))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(isSelected ? ForkiTheme.borderPrimary : ForkiTheme.borderPrimary.opacity(0.3), lineWidth: isSelected ? 2 : 1.5)
+        )
     }
 }
 

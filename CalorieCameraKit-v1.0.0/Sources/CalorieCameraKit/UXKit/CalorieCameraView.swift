@@ -192,21 +192,21 @@ public struct CalorieCameraView: View {
                     .disabled(!coordinator.canCancel)
                     .opacity(coordinator.canCancel ? 1.0 : 0.5)
                     
-                    // Primary Button (right): Scan Food (Forki theme: standard mint)
+                    // Primary Button (right): Scan Food - matches Intro Screen "Let's Get Started" button
                     Button {
                         coordinator.startCapture()
                     } label: {
                         Text("Scan Food")
-                            .font(.system(size: 18, weight: .bold, design: .rounded)) // Match Log Food font style
+                            .font(.system(size: 16, weight: .heavy, design: .rounded))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
+                            .padding(.vertical, 18)
                             .background(
-                                Capsule(style: .continuous)
+                                RoundedRectangle(cornerRadius: 24, style: .continuous)
                                     .fill(
                                         LinearGradient(
                                             colors: [
-                                                Color(red: 0.553, green: 0.831, blue: 0.820), // #8DD4D1 - Mint gradient - ForkiTheme.actionLogFood
+                                                Color(red: 0.553, green: 0.831, blue: 0.820), // #8DD4D1 - Mint gradient
                                                 Color(red: 0.435, green: 0.722, blue: 0.710)  // #6FB8B5 - Darker mint
                                             ],
                                             startPoint: .topLeading,
@@ -214,11 +214,11 @@ public struct CalorieCameraView: View {
                                         )
                                     )
                                     .overlay(
-                                        Capsule(style: .continuous)
-                                            .stroke(Color(red: 0.478, green: 0.722, blue: 0.710), lineWidth: 2) // #7AB8B5 - Mint border
+                                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                            .stroke(Color(red: 0.478, green: 0.722, blue: 0.710), lineWidth: 4) // #7AB8B5 - Mint border
                                     )
-                                    .shadow(color: Color.black.opacity(0.2), radius: 12, x: 0, y: 6) // Match Log Food shadow
                             )
+                            .shadow(color: Color.black.opacity(0.15), radius: 10, x: 0, y: 6)
                     }
                     .disabled(!coordinator.canStartCapture)
                     .opacity(coordinator.canStartCapture ? 1.0 : 0.5)

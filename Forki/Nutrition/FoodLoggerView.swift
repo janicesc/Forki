@@ -47,6 +47,7 @@ struct FoodLoggerView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var searchQuery: String = ""
+    @State private var previousSearchQuery: String = ""
     @State private var searchResults: [RapidSearch.LocalFood] = []
     @State private var selectedFood: FoodItem? = nil
     @State private var showingLogHistory = false
@@ -80,7 +81,9 @@ struct FoodLoggerView: View {
 
         // Initial state from prefill (if present)
         _selectedFood = State(initialValue: prefill)
-        _searchQuery = State(initialValue: prefill?.name ?? "")
+        let initialQuery = prefill?.name ?? ""
+        _searchQuery = State(initialValue: initialQuery)
+        _previousSearchQuery = State(initialValue: initialQuery)
     }
 
     // MARK: - Body
@@ -121,6 +124,21 @@ struct FoodLoggerView: View {
             .onChange(of: searchQuery) { newValue in
                 // Feed query into RapidSearch via view model
                 searchViewModel.searchText = newValue
+                
+                // If there's no prefill, handle search query changes
+                if prefill == nil {
+                    // If user clears the search query, return to default view (popular foods)
+                    if newValue.isEmpty {
+                        selectedFood = nil
+                    } else if selectedFood != nil && newValue != previousSearchQuery {
+                        // When user types a new/different search query, clear previously selected food
+                        // so they can see new search results instead of the old selected food
+                        selectedFood = nil
+                    }
+                }
+                
+                // Update previous search query for next comparison
+                previousSearchQuery = newValue
             }
             .onChange(of: searchViewModel.searchResults) { newResults in
                 // onChange is already on main thread
@@ -244,7 +262,6 @@ struct FoodLoggerView: View {
 
     private var mainContent: some View {
         VStack(spacing: 0) {
-            debugPrefillSection
             searchBarSection
             contentArea
         }
@@ -253,46 +270,6 @@ struct FoodLoggerView: View {
                 .stroke(ForkiTheme.borderPrimary, lineWidth: 4)
                 .ignoresSafeArea()
         )
-    }
-
-    // MARK: Debug – Prefill
-
-    @ViewBuilder
-    private var debugPrefillSection: some View {
-        if let prefill = prefill {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("🔍 DEBUG: Camera Result")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundColor(.red)
-                Text("Name: '\(prefill.name)'")
-                    .font(.system(size: 10))
-                    .foregroundColor(prefill.name == "Detected Food" ? .red : .green)
-                Text("Category: '\(prefill.category)'")
-                    .font(.system(size: 10))
-                    .foregroundColor(.red)
-                Text("Calories: \(prefill.calories)")
-                    .font(.system(size: 10))
-                    .foregroundColor(prefill.calories < 20 ? .red : .green)
-                Text("Protein: \(String(format: "%.1f", prefill.protein))g, Carbs: \(String(format: "%.1f", prefill.carbs))g, Fats: \(String(format: "%.1f", prefill.fats))g")
-                    .font(.system(size: 10))
-                    .foregroundColor(.red)
-                if prefill.name == "Detected Food" {
-                    Text("⚠️ ISSUE: Label is generic - API may have failed")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundColor(.red)
-                }
-                if prefill.calories < 20 {
-                    Text("⚠️ ISSUE: Calories too low (< 20) - Geometry V2 may have failed")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundColor(.red)
-                }
-            }
-            .padding(8)
-            .background(Color.yellow.opacity(0.3))
-            .cornerRadius(8)
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-        }
     }
 
     // MARK: Search Bar
@@ -352,13 +329,8 @@ struct FoodLoggerView: View {
                 prefilledFoodView(food: food)
                     .id(food.id) // force refresh
 
-                // Only show search results if there's NO prefill (user selected from search/popular)
-                // When there's a prefill (from restaurant, recipe, etc.), hide search results
-                if prefill == nil && !searchQuery.isEmpty {
-                    // User is searching → show results BELOW selected food
-                    searchResultsSection
-                }
-                // Removed popular foods section when food is selected
+                // Hide search results when a food item is selected
+                // Only show search results if there's NO prefill AND no food has been selected from search
             }
         } else {
             // No prefill:
@@ -527,19 +499,25 @@ struct PopularFoodCard: View {
             VStack(spacing: 8) {
                 Text(getEmoji(for: food.name))
                     .font(.system(size: 36))
+                    .frame(height: 40) // Fixed height for emoji
 
                 Text(food.name)
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                     .foregroundColor(Color(hex: "#1A2332"))
+                    .frame(height: 32) // Fixed height for 2 lines of text
+                    .minimumScaleFactor(0.8) // Allow slight scaling if needed
 
                 Text("\(food.calories) cal")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(Color(hex: "#6B7280"))
+                    .frame(height: 16) // Fixed height for calories
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .frame(height: 120) // Fixed height for entire card
+            .padding(.vertical, 12)
+            .padding(.horizontal, 8)
             .background(
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color.white)

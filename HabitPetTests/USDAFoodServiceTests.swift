@@ -7,7 +7,7 @@
 
 import XCTest
 import Combine
-@testable import HabitPet
+@testable import Forki
 
 /// Tests for USDA FoodData Central integration
 class USDAFoodServiceTests: XCTestCase {

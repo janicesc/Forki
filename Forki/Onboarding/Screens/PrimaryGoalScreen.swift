@@ -12,12 +12,12 @@ struct PrimaryGoalScreen: View {
     @ObservedObject var navigator: OnboardingNavigator
     let onNext: () -> Void
     
-    private let goals: [(id: String, title: String)] = [
-        ("improve_habits", "Build healthier eating habits"),
-        ("lose_weight", "Lose weight"),
-        ("maintain_weight", "Maintain my weight"),
-        ("gain_weight", "Gain weight / build muscle"),
-        ("boost_energy", "Boost energy & reduce stress")
+    private let goals: [(id: String, title: String, emoji: String)] = [
+        ("improve_habits", "Build healthier eating habits", "🌱"),
+        ("lose_weight", "Lose weight", "⚖️"),
+        ("maintain_weight", "Maintain my weight", "🧘‍♀️"),
+        ("gain_weight", "Gain weight / build muscle", "💪"),
+        ("boost_energy", "Boost energy & reduce stress", "⚡")
     ]
     
     var body: some View {
@@ -32,7 +32,7 @@ struct PrimaryGoalScreen: View {
                         currentStep: navigator.currentStep,
                         totalSteps: navigator.totalSteps,
                         sectionIndex: navigator.getSectionIndex(for: navigator.currentStep),
-                        totalSections: 7,
+                        totalSections: 6,
                         canGoBack: navigator.canGoBack(),
                         onBack: { navigator.goBack() }
                     )
@@ -60,6 +60,7 @@ struct PrimaryGoalScreen: View {
                             ForEach(goals, id: \.id) { goal in
                                 MultiSelectCard(
                                     title: goal.title,
+                                    emoji: goal.emoji,
                                     isSelected: data.primaryGoals.contains(goal.id)
                                 ) {
                                     if data.primaryGoals.contains(goal.id) {
@@ -93,6 +94,7 @@ struct PrimaryGoalScreen: View {
                     .padding(.horizontal, 24)
                     .padding(.bottom, 32)
                 }
+                .frame(maxWidth: 460)
             }
         }
     }

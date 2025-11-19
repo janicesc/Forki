@@ -207,10 +207,8 @@ struct AvatarVideoView: View {
                         player.pause()
                     }
             } else {
-                // Fallback image while video loads
-                Image("habitpet")
-                    .resizable()
-                    .scaledToFill()
+                // Fallback placeholder while video loads
+                Color.clear
             }
         }
         .onAppear {

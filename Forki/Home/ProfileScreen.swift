@@ -94,27 +94,37 @@ struct ProfileScreen: View {
                             HStack {
                                 Spacer()
                                 
-                                Button {
-                                    if showSettingsMenu {
-                                        // If already showing Sign Out, execute sign out
-                                        showSettingsMenu = false
-                                        if let onSignOut = onSignOut {
-                                            onSignOut()
-                                        }
-                                    } else {
+                                // Fixed width container to prevent layout shift
+                                ZStack {
+                                    // Settings Icon (hidden when Sign Out is shown)
+                                    Button {
                                         // Toggle to show Sign Out UI
                                         withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                             showSettingsMenu = true
                                         }
+                                    } label: {
+                                        Image(systemName: "gearshape")
+                                            .font(.title2)
+                                            .foregroundColor(ForkiTheme.textPrimary)
                                     }
-                                } label: {
-                                    if showSettingsMenu {
-                                        // Show Sign Out UI
+                                    .opacity(showSettingsMenu ? 0 : 1)
+                                    .scaleEffect(showSettingsMenu ? 0.8 : 1.0)
+                                    .frame(width: 120, alignment: .trailing) // Fixed width
+                                    
+                                    // Sign Out Button (hidden when Settings is shown)
+                                    Button {
+                                        // Execute sign out
+                                        showSettingsMenu = false
+                                        if let onSignOut = onSignOut {
+                                            onSignOut()
+                                        }
+                                    } label: {
                                         HStack(spacing: 6) {
                                             Image(systemName: "arrow.right.square")
                                                 .font(.system(size: 16, weight: .semibold))
                                             Text("Sign Out")
                                                 .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                                .lineLimit(1)
                                         }
                                         .foregroundColor(ForkiTheme.textPrimary)
                                         .padding(.horizontal, 12)
@@ -127,13 +137,12 @@ struct ProfileScreen: View {
                                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                                 .stroke(ForkiTheme.borderPrimary.opacity(0.6), lineWidth: 2)
                                         )
-                                    } else {
-                                        // Show Settings Icon
-                                        Image(systemName: "gearshape")
-                                            .font(.title2)
-                                            .foregroundColor(ForkiTheme.textPrimary)
                                     }
+                                    .opacity(showSettingsMenu ? 1 : 0)
+                                    .scaleEffect(showSettingsMenu ? 1.0 : 0.8)
+                                    .frame(width: 120, alignment: .trailing) // Fixed width, same as Settings
                                 }
+                                .frame(width: 120, alignment: .trailing) // Fixed container width
                             }
                         }
                         .padding(.horizontal, 16)
@@ -311,13 +320,6 @@ extension ProfileScreen {
     private var mainProfileContainer: some View {
         ZStack(alignment: .topTrailing) {
             VStack(spacing: 24) {
-                // Username
-                if let username = UserDefaults.standard.string(forKey: "hp_userEmail"), !username.isEmpty {
-                    Text("@\(username)")
-                        .font(.system(size: 18, weight: .semibold, design: .rounded))
-                        .foregroundColor(ForkiTheme.textSecondary)
-                }
-                
                 // Avatar Circle with profile icon frame
                 ZStack {
                     // Profile icon as circle frame - same color as HomeScreen
@@ -367,56 +369,89 @@ extension ProfileScreen {
                 }
                 .frame(maxWidth: .infinity)
                 
-                // Age, Gender, Height, Weight at top of Body Type section
+                // Age, Gender, Height, Weight, Body Type, BMI, Metabolism - Two column layout
                 VStack(alignment: .leading, spacing: 16) {
-                    // Age
-                    if !userData.age.isEmpty {
-                        EmojiProfileRow(icon: "calendar", label: "Age", value: "\(userData.age) years old")
-                    }
-                    
-                    // Gender
-                    if !userData.gender.isEmpty {
-                        EmojiProfileRow(icon: "person.fill", label: "Gender", value: userData.gender.capitalized)
-                    }
-                    
-                    // Height
-                    if !userData.height.isEmpty {
-                        let heightInCm = Int(userData.height) ?? 0
-                        let (feet, inches) = cmToFeetInches(cm: CGFloat(heightInCm))
-                        EmojiProfileRow(icon: "ruler", label: "Height", value: "\(feet)′\(inches)″ (\(heightInCm) cm)")
-                    }
-                    
-                    // Weight
-                    if !userData.weight.isEmpty {
-                        let weightInKg = Int(userData.weight) ?? 0
-                        let weightInLbs = Int(CGFloat(weightInKg) * 2.20462)
-                        EmojiProfileRow(icon: "scalemass", label: "Weight", value: "\(weightInLbs) lbs (\(weightInKg) kg)")
-                    }
-                    
-                    // Body Type and BMI - side by side
-                    if let bodyType = snapshot?.bodyType {
-                        HStack(alignment: .center, spacing: 0) {
-                            // Body Type on the left
-                            EmojiProfileRow(icon: "person.fill", label: "Body Type", value: bodyType)
-                            
-                            // Spacer with minimum length to create balanced spacing
-                            Spacer(minLength: 50)
-                            
-                            // BMI on the right, positioned nicely with consistent spacing
-                            // Using same EmojiProfileRow component ensures spacing matches other features (12px between icon and text)
-                            if let bmi = snapshot?.BMI {
-                                EmojiProfileRow(icon: "chart.bar.fill", label: "BMI", value: String(format: "%.1f", bmi))
-                            }
+                    // Row 1: Age (left) | Gender (right)
+                    HStack(alignment: .top, spacing: 20) {
+                        // Age on left
+                        if !userData.age.isEmpty {
+                            EmojiProfileRow(icon: "calendar", label: "Age", value: userData.age)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        } else {
+                            Spacer()
+                                .frame(maxWidth: .infinity)
                         }
-                        .padding(.trailing, 30) // Balanced padding from right edge
-                    } else if let bmi = snapshot?.BMI {
-                        // If no body type but we have BMI, still show BMI
-                        EmojiProfileRow(icon: "chart.bar.fill", label: "BMI", value: String(format: "%.1f", bmi))
+                        
+                        // Gender on right
+                        if !userData.gender.isEmpty {
+                            EmojiProfileRow(icon: "person.fill", label: "Gender", value: userData.gender.capitalized)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        } else {
+                            Spacer()
+                                .frame(maxWidth: .infinity)
+                        }
                     }
                     
-                    // Metabolism
-                    if let metabolism = snapshot?.metabolism {
-                        EmojiProfileRow(icon: "flame.fill", label: "Metabolism", value: metabolism)
+                    // Row 2: Height (left) | Weight (right)
+                    HStack(alignment: .top, spacing: 20) {
+                        // Height on left
+                        if !userData.height.isEmpty {
+                            let heightInCm = Int(userData.height) ?? 0
+                            let (feet, inches) = cmToFeetInches(cm: CGFloat(heightInCm))
+                            EmojiProfileRow(icon: "ruler", label: "Height", value: "\(feet)′\(inches)″ (\(heightInCm) cm)")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        } else {
+                            Spacer()
+                                .frame(maxWidth: .infinity)
+                        }
+                        
+                        // Weight on right
+                        if !userData.weight.isEmpty {
+                            let weightInKg = Int(userData.weight) ?? 0
+                            let weightInLbs = Int(CGFloat(weightInKg) * 2.20462)
+                            EmojiProfileRow(icon: "scalemass", label: "Weight", value: "\(weightInLbs) lbs (\(weightInKg) kg)")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        } else {
+                            Spacer()
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    
+                    // Row 3: Body Type (left) | BMI (right)
+                    HStack(alignment: .top, spacing: 20) {
+                        // Body Type on left
+                        if let bodyType = snapshot?.bodyType {
+                            EmojiProfileRow(icon: "person.fill", label: "Body Type", value: bodyType)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        } else {
+                            Spacer()
+                                .frame(maxWidth: .infinity)
+                        }
+                        
+                        // BMI on right
+                        if let bmi = snapshot?.BMI {
+                            EmojiProfileRow(icon: "chart.bar.fill", label: "BMI", value: String(format: "%.1f", bmi))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        } else {
+                            Spacer()
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    
+                    // Row 4: Metabolism (left) | (right empty)
+                    HStack(alignment: .top, spacing: 20) {
+                        // Metabolism on left
+                        if let metabolism = snapshot?.metabolism {
+                            EmojiProfileRow(icon: "flame.fill", label: "Metabolism", value: metabolism)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        } else {
+                            Spacer()
+                                .frame(maxWidth: .infinity)
+                        }
+                        
+                        // Right side empty
+                        Spacer()
+                            .frame(maxWidth: .infinity)
                     }
                 }
                 
@@ -653,7 +688,7 @@ private struct EditNameView: View {
                     
                     Spacer()
                     
-                    // Save Button
+                    // Save Button - matches Intro Screen "Let's Get Started" button
                     Button {
                         onSave()
                     } label: {
@@ -661,15 +696,22 @@ private struct EditNameView: View {
                             .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
+                            .padding(.vertical, 18)
                             .background(
-                                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                    .fill(ForkiTheme.highlightText)
+                                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [Color(hex: "#8DD4D1"), Color(hex: "#6FB8B5")], // Mint gradient - same as Log Food button
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                            .stroke(Color(hex: "#7AB8B5"), lineWidth: 4) // Border color for mint button
+                                    )
                             )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                    .stroke(ForkiTheme.borderPrimary, lineWidth: 2)
-                            )
+                            .shadow(color: ForkiTheme.actionShadow, radius: 10, x: 0, y: 6)
                     }
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     .opacity(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.5 : 1.0)

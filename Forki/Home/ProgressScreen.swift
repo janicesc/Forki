@@ -207,32 +207,35 @@ struct ProgressScreen: View {
     // MARK: - 1. Forki Avatar + Emotional Encouragement Card (A1 + B2 Layout)
     private var forkiAvatarCard: some View {
         VStack(spacing: 1) {
-            HStack {
-                Text("Your Forki Today")
-                    .font(.system(size: 18, weight: .semibold, design: .rounded))
-                    .foregroundColor(ForkiTheme.textPrimary)
-                    .padding(.leading, 5) // Move title 5px in from left
-                Spacer()
-            }
-            
             // Top row: Large Avatar (left) + Consistency Score Ring (right) - Level and parallel
             HStack(alignment: .top, spacing: 20) {
-                // Left half: Large Avatar - moved 5px in from left, aligned with ring
+                // Left half: Large Avatar - balanced spacing
                 VStack(spacing: 0) {
-                    // Spacer to align Avatar with the ring (title height + 15px padding)
-                    Spacer()
-                        .frame(height: 18 + 15) // Title height (~18px for font size 15) + bottom padding (15px)
+                    // Title centered above avatar view
+                    Text("Your Forki Today")
+                        .font(.system(size: 18, weight: .semibold, design: .rounded))
+                        .foregroundColor(ForkiTheme.textPrimary)
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
+                        .padding(.bottom, 3) // Add 3px spacing below title
                     
-                    AvatarView(state: avatarState, showFeedingEffect: .constant(false))
-                        .frame(width: 120, height: 120)
+                    // Spacer to position Avatar closer to title
+                    Spacer()
+                        .frame(height: 7) // Reduced spacing to move avatar up
+                    
+                    AvatarView(state: avatarState, showFeedingEffect: .constant(false), size: 142) // 10% smaller (158 * 0.9 = 142.2 ≈ 142)
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                         .shadow(color: ForkiTheme.borderPrimary.opacity(0.15), radius: 10, x: 0, y: 5)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, 5) // Move 5px in from left
+                .padding(.leading, 5) // Left spacing
                 
                 // Right half: Consistency Score Ring with centered title above
                 VStack(spacing: 0) {
+                    // Spacer to move Consistency Score and ring down by 5px
+                    Spacer()
+                        .frame(height: 5)
+                    
                     // Title centered above the ring
                     Text("Consistency Score")
                         .font(.system(size: 15, weight: .semibold, design: .rounded))
@@ -266,7 +269,7 @@ struct ProgressScreen: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
-                .padding(.trailing, 5) // Move 5px in from right
+                .padding(.trailing, 5) // Right spacing - matches left spacing
             }
             .padding(.bottom, 14) // Spacing below avatar and ring (increased by 2px)
             

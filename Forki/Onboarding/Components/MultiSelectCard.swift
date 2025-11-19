@@ -10,19 +10,26 @@ import SwiftUI
 struct MultiSelectCard: View {
     let title: String
     let subtitle: String?
+    let emoji: String?
     let isSelected: Bool
     let action: () -> Void
     
-    init(title: String, subtitle: String? = nil, isSelected: Bool, action: @escaping () -> Void) {
+    init(title: String, subtitle: String? = nil, emoji: String? = nil, isSelected: Bool, action: @escaping () -> Void) {
         self.title = title
         self.subtitle = subtitle
+        self.emoji = emoji
         self.isSelected = isSelected
         self.action = action
     }
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
+            HStack(spacing: 16) {
+                if let emoji = emoji {
+                    Text(emoji)
+                        .font(.system(size: 28))
+                }
+                
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
                         .font(.system(size: 16, weight: .semibold, design: .rounded))
@@ -43,7 +50,8 @@ struct MultiSelectCard: View {
                     .font(.system(size: 24, weight: .semibold))
                     .foregroundColor(isSelected ? ForkiTheme.borderPrimary : ForkiTheme.textSecondary.opacity(0.5))
             }
-            .padding(16)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 14)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
